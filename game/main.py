@@ -179,7 +179,7 @@ async def main():
         for bullet in bullets:
             pygame.draw.rect(screen, (255, 255, 80), (bullet[0], bullet[1] - 3, 12, 6))
 
-        # Balles ennemies
+        # Enemies gunfire
         for enemy_bullet in enemy_bullets:
             pygame.draw.rect(
                 screen,
