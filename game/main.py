@@ -131,7 +131,7 @@ async def main():
             if enemy_bullet[0] > -20
         ]
 
-        # Déplacement des ennemis
+        # Enemies movement
         for enemy in enemies:
             enemy[0] -= enemy_speed
 
