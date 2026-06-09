@@ -94,7 +94,7 @@ async def main():
         ship_x = max(30, min(WIDTH - 30, ship_x))
         ship_y = max(30, min(HEIGHT - 30, ship_y))
 
-        # Tir du joueur avec espace
+        # Player gunfire with space keyboard
         if shoot_cooldown > 0:
             shoot_cooldown -= 1
 
