@@ -187,7 +187,7 @@ async def main():
                 (enemy_bullet[0], enemy_bullet[1] - 3, 12, 6)
             )
 
-        # Ennemis
+        # Ennemies
         for enemy in enemies:
             draw_enemy(screen, enemy[0], enemy[1])
 
