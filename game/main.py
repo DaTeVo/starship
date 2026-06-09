@@ -18,7 +18,6 @@ def draw_ship(screen, x, y):
     pygame.draw.polygon(screen, (220, 220, 255), points)
     pygame.draw.polygon(screen, (80, 160, 255), points, 2)
 
-    # Flamme moteur
     flame = [
         (x - 20, y - 8),
         (x - 38, y),
@@ -27,16 +26,38 @@ def draw_ship(screen, x, y):
     pygame.draw.polygon(screen, (255, 120, 40), flame)
 
 
+def draw_enemy(screen, x, y):
+    points = [
+        (x - 25, y),
+        (x + 20, y - 15),
+        (x + 10, y),
+        (x + 20, y + 15),
+    ]
+    pygame.draw.polygon(screen, (255, 80, 80), points)
+    pygame.draw.polygon(screen, (255, 180, 180), points, 2)
+
+
 async def main():
     pygame.init()
 
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Space Game Python")
     clock = pygame.time.Clock()
+    font = pygame.font.SysFont(None, 36)
 
     ship_x = WIDTH // 2
     ship_y = HEIGHT // 2
     speed = 5
+
+    bullets = []
+    bullet_speed = 10
+    shoot_cooldown = 0
+
+    enemies = []
+    enemy_speed = 3
+    spawn_timer = 0
+
+    score = 0
 
     stars = [
         [random.randint(0, WIDTH), random.randint(0, HEIGHT), random.randint(1, 3)]
@@ -66,25 +87,76 @@ async def main():
         ship_x = max(30, min(WIDTH - 30, ship_x))
         ship_y = max(30, min(HEIGHT - 30, ship_y))
 
+        # Tir avec espace
+        if shoot_cooldown > 0:
+            shoot_cooldown -= 1
+
+        if keys[pygame.K_SPACE] and shoot_cooldown == 0:
+            bullets.append([ship_x + 30, ship_y])
+            shoot_cooldown = 15
+
+        # Apparition des ennemis
+        spawn_timer += 1
+        if spawn_timer >= 60:
+            enemies.append([WIDTH + 40, random.randint(40, HEIGHT - 40)])
+            spawn_timer = 0
+
+        # Déplacement des balles
+        for bullet in bullets:
+            bullet[0] += bullet_speed
+
+        bullets = [bullet for bullet in bullets if bullet[0] < WIDTH + 20]
+
+        # Déplacement des ennemis
+        for enemy in enemies:
+            enemy[0] -= enemy_speed
+
+        enemies = [enemy for enemy in enemies if enemy[0] > -50]
+
+        # Collisions balles / ennemis
+        for bullet in bullets[:]:
+            bullet_rect = pygame.Rect(bullet[0], bullet[1] - 3, 12, 6)
+
+            for enemy in enemies[:]:
+                enemy_rect = pygame.Rect(enemy[0] - 25, enemy[1] - 15, 50, 30)
+
+                if bullet_rect.colliderect(enemy_rect):
+                    bullets.remove(bullet)
+                    enemies.remove(enemy)
+                    score += 1
+                    break
+
         screen.fill((5, 5, 20))
 
-        # Défilement des étoiles
+        # Étoiles
         for star in stars:
             star[0] -= star[2]
+
             if star[0] < 0:
                 star[0] = WIDTH
                 star[1] = random.randint(0, HEIGHT)
 
             pygame.draw.circle(screen, (220, 220, 220), (star[0], star[1]), star[2])
 
+        # Balles
+        for bullet in bullets:
+            pygame.draw.rect(screen, (255, 255, 80), (bullet[0], bullet[1] - 3, 12, 6))
+
+        # Ennemis
+        for enemy in enemies:
+            draw_enemy(screen, enemy[0], enemy[1])
+
         draw_ship(screen, ship_x, ship_y)
+
+        score_text = font.render(f"Score : {score}", True, (255, 255, 255))
+        screen.blit(score_text, (20, 20))
 
         pygame.display.flip()
 
-        # Obligatoire pour pygbag / navigateur
         await asyncio.sleep(0)
 
     pygame.quit()
 
 
 asyncio.run(main())
+
