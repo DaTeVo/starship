@@ -175,7 +175,7 @@ async def main():
 
             pygame.draw.circle(screen, (220, 220, 220), (star[0], star[1]), star[2])
 
-        # Balles du joueur
+        # Player gunfire
         for bullet in bullets:
             pygame.draw.rect(screen, (255, 255, 80), (bullet[0], bullet[1] - 3, 12, 6))
 
