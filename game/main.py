@@ -49,13 +49,20 @@ async def main():
     ship_y = HEIGHT // 2
     speed = 5
 
+    player_life = 3
+
     bullets = []
     bullet_speed = 10
     shoot_cooldown = 0
 
+    enemy_bullets = []
+    enemy_bullet_speed = 6
+
     enemies = []
     enemy_speed = 3
     spawn_timer = 0
+
+    enemy_shoot_timer = 0
 
     score = 0
 
@@ -87,7 +94,7 @@ async def main():
         ship_x = max(30, min(WIDTH - 30, ship_x))
         ship_y = max(30, min(HEIGHT - 30, ship_y))
 
-        # Tir avec espace
+        # Tir du joueur avec espace
         if shoot_cooldown > 0:
             shoot_cooldown -= 1
 
@@ -101,11 +108,28 @@ async def main():
             enemies.append([WIDTH + 40, random.randint(40, HEIGHT - 40)])
             spawn_timer = 0
 
-        # Déplacement des balles
+        # Tir des ennemis
+        enemy_shoot_timer += 1
+
+        if enemy_shoot_timer >= 50 and len(enemies) > 0:
+            enemy = random.choice(enemies)
+            enemy_bullets.append([enemy[0] - 30, enemy[1]])
+            enemy_shoot_timer = 0
+
+        # Déplacement des balles du joueur
         for bullet in bullets:
             bullet[0] += bullet_speed
 
         bullets = [bullet for bullet in bullets if bullet[0] < WIDTH + 20]
+
+        # Déplacement des balles ennemies
+        for enemy_bullet in enemy_bullets:
+            enemy_bullet[0] -= enemy_bullet_speed
+
+        enemy_bullets = [
+            enemy_bullet for enemy_bullet in enemy_bullets
+            if enemy_bullet[0] > -20
+        ]
 
         # Déplacement des ennemis
         for enemy in enemies:
@@ -113,7 +137,7 @@ async def main():
 
         enemies = [enemy for enemy in enemies if enemy[0] > -50]
 
-        # Collisions balles / ennemis
+        # Collisions balles du joueur / ennemis
         for bullet in bullets[:]:
             bullet_rect = pygame.Rect(bullet[0], bullet[1] - 3, 12, 6)
 
@@ -125,6 +149,19 @@ async def main():
                     enemies.remove(enemy)
                     score += 1
                     break
+
+        # Collision balles ennemies / joueur
+        player_rect = pygame.Rect(ship_x - 25, ship_y - 15, 50, 30)
+
+        for enemy_bullet in enemy_bullets[:]:
+            enemy_bullet_rect = pygame.Rect(enemy_bullet[0], enemy_bullet[1] - 3, 12, 6)
+
+            if enemy_bullet_rect.colliderect(player_rect):
+                enemy_bullets.remove(enemy_bullet)
+                player_life -= 1
+
+                if player_life <= 0:
+                    running = False
 
         screen.fill((5, 5, 20))
 
@@ -138,9 +175,17 @@ async def main():
 
             pygame.draw.circle(screen, (220, 220, 220), (star[0], star[1]), star[2])
 
-        # Balles
+        # Balles du joueur
         for bullet in bullets:
             pygame.draw.rect(screen, (255, 255, 80), (bullet[0], bullet[1] - 3, 12, 6))
+
+        # Balles ennemies
+        for enemy_bullet in enemy_bullets:
+            pygame.draw.rect(
+                screen,
+                (255, 80, 80),
+                (enemy_bullet[0], enemy_bullet[1] - 3, 12, 6)
+            )
 
         # Ennemis
         for enemy in enemies:
@@ -149,7 +194,10 @@ async def main():
         draw_ship(screen, ship_x, ship_y)
 
         score_text = font.render(f"Score : {score}", True, (255, 255, 255))
+        life_text = font.render(f"Vie : {player_life}", True, (255, 255, 255))
+
         screen.blit(score_text, (20, 20))
+        screen.blit(life_text, (20, 55))
 
         pygame.display.flip()
 
@@ -159,4 +207,3 @@ async def main():
 
 
 asyncio.run(main())
-
