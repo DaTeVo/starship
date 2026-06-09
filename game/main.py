@@ -137,7 +137,7 @@ async def main():
 
         enemies = [enemy for enemy in enemies if enemy[0] > -50]
 
-        # Collisions balles du joueur / ennemis
+        # Gunfire collision player -> enemies
         for bullet in bullets[:]:
             bullet_rect = pygame.Rect(bullet[0], bullet[1] - 3, 12, 6)
 
