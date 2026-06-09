@@ -116,7 +116,7 @@ async def main():
             enemy_bullets.append([enemy[0] - 30, enemy[1]])
             enemy_shoot_timer = 0
 
-        # Déplacement des balles du joueur
+        # Player gunfire movement
         for bullet in bullets:
             bullet[0] += bullet_speed
 
