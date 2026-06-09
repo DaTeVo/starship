@@ -150,7 +150,7 @@ async def main():
                     score += 1
                     break
 
-        # Collision balles ennemies / joueur
+        # Gunfire collision enemies -> player
         player_rect = pygame.Rect(ship_x - 25, ship_y - 15, 50, 30)
 
         for enemy_bullet in enemy_bullets[:]:
