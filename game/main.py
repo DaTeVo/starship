@@ -102,7 +102,7 @@ async def main():
             bullets.append([ship_x + 30, ship_y])
             shoot_cooldown = 15
 
-        # Apparition des ennemis
+        # Enemies poping
         spawn_timer += 1
         if spawn_timer >= 60:
             enemies.append([WIDTH + 40, random.randint(40, HEIGHT - 40)])
