@@ -108,7 +108,7 @@ async def main():
             enemies.append([WIDTH + 40, random.randint(40, HEIGHT - 40)])
             spawn_timer = 0
 
-        # Tir des ennemis
+        # Enemies gunfire
         enemy_shoot_timer += 1
 
         if enemy_shoot_timer >= 50 and len(enemies) > 0:
