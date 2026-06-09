@@ -122,7 +122,7 @@ async def main():
 
         bullets = [bullet for bullet in bullets if bullet[0] < WIDTH + 20]
 
-        # Déplacement des balles ennemies
+        # Enemies gunfire movement
         for enemy_bullet in enemy_bullets:
             enemy_bullet[0] -= enemy_bullet_speed
 
