@@ -165,7 +165,7 @@ async def main():
 
         screen.fill((5, 5, 20))
 
-        # Étoiles
+        # Stars
         for star in stars:
             star[0] -= star[2]
 
