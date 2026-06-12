@@ -43,19 +43,27 @@ def draw_powerup(screen, x, y, power_type, font):
         "triple": (180, 100, 255),
         "rapid": (100, 255, 120),
         "laser": (80, 220, 255),
+
+        "heal1": (80, 255, 120),
+        "heal2": (40, 220, 80),
+        "bonus_heart": (255, 220, 40),
     }
 
     letters = {
         "triple": "T",
         "rapid": "R",
         "laser": "L",
+
+        "heal1": "+1",
+        "heal2": "+2",
+        "bonus_heart": "♥",
     }
 
     color = colors[power_type]
     letter = letters[power_type]
 
-    pygame.draw.circle(screen, color, (x, y), 14)
-    pygame.draw.circle(screen, (255, 255, 255), (x, y), 14, 2)
+    pygame.draw.circle(screen, color, (x, y), 15)
+    pygame.draw.circle(screen, (255, 255, 255), (x, y), 15, 2)
 
     text = font.render(letter, True, (10, 10, 20))
     text_rect = text.get_rect(center=(x, y))
@@ -71,11 +79,20 @@ def draw_explosion(screen, x, y, age, max_age):
 
     for angle in range(0, 360, 45):
         rad = math.radians(angle)
+
         start_x = x + int(math.cos(rad) * radius * 0.4)
         start_y = y + int(math.sin(rad) * radius * 0.4)
+
         end_x = x + int(math.cos(rad) * radius)
         end_y = y + int(math.sin(rad) * radius)
-        pygame.draw.line(screen, (255, 220, 80), (start_x, start_y), (end_x, end_y), 2)
+
+        pygame.draw.line(
+            screen,
+            (255, 220, 80),
+            (start_x, start_y),
+            (end_x, end_y),
+            2
+        )
 
 
 def draw_game_over(screen, score, big_font, font):
@@ -100,6 +117,16 @@ def draw_game_over(screen, score, big_font, font):
     screen.blit(quit_text, quit_rect)
 
 
+def damage_player(game):
+    if game["bonus_life"] > 0:
+        game["bonus_life"] -= 1
+    else:
+        game["player_life"] -= 1
+
+    if game["player_life"] <= 0:
+        game["game_over"] = True
+
+
 async def main():
     pygame.init()
 
@@ -112,8 +139,10 @@ async def main():
     big_font = pygame.font.SysFont(None, 80)
 
     speed = 5
+
     bullet_speed = 10
     enemy_bullet_speed = 6
+
     enemy_speed = 3
 
     powerup_duration = 8 * FPS
@@ -123,17 +152,23 @@ async def main():
         return {
             "ship_x": WIDTH // 2,
             "ship_y": HEIGHT // 2,
+
             "player_life": 3,
+            "bonus_life": 0,
+
             "bullets": [],
             "enemy_bullets": [],
             "enemies": [],
             "powerups": [],
             "explosions": [],
+
             "shoot_cooldown": 0,
             "spawn_timer": 0,
             "enemy_shoot_timer": 0,
+
             "score": 0,
             "game_over": False,
+
             "power_timers": {
                 "triple": 0,
                 "rapid": 0,
@@ -204,6 +239,7 @@ async def main():
                 game["shoot_cooldown"] = cooldown_time
 
             game["spawn_timer"] += 1
+
             if game["spawn_timer"] >= 60:
                 game["enemies"].append([WIDTH + 40, random.randint(40, HEIGHT - 40)])
                 game["spawn_timer"] = 0
@@ -250,6 +286,7 @@ async def main():
                 if powerup[0] > -30
             ]
 
+            # Collision tirs du joueur -> ennemis
             for bullet in game["bullets"][:]:
                 if bullet[2] == "laser":
                     bullet_rect = pygame.Rect(bullet[0], bullet[1] - 6, 26, 12)
@@ -264,9 +301,21 @@ async def main():
                         game["explosions"].append([enemy[0], enemy[1], 0])
                         game["score"] += 1
 
-                        if random.random() < 0.25:
+                        # Drops possibles après destruction d'un ennemi
+                        drop_chance = random.random()
+
+                        if drop_chance < 0.25:
                             power_type = random.choice(["triple", "rapid", "laser"])
                             game["powerups"].append([enemy[0], enemy[1], power_type])
+
+                        elif drop_chance < 0.35:
+                            game["powerups"].append([enemy[0], enemy[1], "heal1"])
+
+                        elif drop_chance < 0.39:
+                            game["powerups"].append([enemy[0], enemy[1], "heal2"])
+
+                        elif drop_chance < 0.44:
+                            game["powerups"].append([enemy[0], enemy[1], "bonus_heart"])
 
                         if bullet[2] != "laser":
                             if bullet in game["bullets"]:
@@ -280,33 +329,48 @@ async def main():
                 30
             )
 
+            # Collision tirs ennemis -> joueur
             for enemy_bullet in game["enemy_bullets"][:]:
-                enemy_bullet_rect = pygame.Rect(enemy_bullet[0], enemy_bullet[1] - 3, 12, 6)
+                enemy_bullet_rect = pygame.Rect(
+                    enemy_bullet[0],
+                    enemy_bullet[1] - 3,
+                    12,
+                    6
+                )
 
                 if enemy_bullet_rect.colliderect(player_rect):
                     game["enemy_bullets"].remove(enemy_bullet)
-                    game["player_life"] -= 1
+                    damage_player(game)
 
-                    if game["player_life"] <= 0:
-                        game["game_over"] = True
-
+            # Collision vaisseaux ennemis -> joueur
             for enemy in game["enemies"][:]:
                 enemy_rect = pygame.Rect(enemy[0] - 25, enemy[1] - 15, 50, 30)
 
                 if player_rect.colliderect(enemy_rect):
                     game["enemies"].remove(enemy)
                     game["explosions"].append([enemy[0], enemy[1], 0])
-                    game["player_life"] -= 1
+                    damage_player(game)
 
-                    if game["player_life"] <= 0:
-                        game["game_over"] = True
-
+            # Récupération des drops
             for powerup in game["powerups"][:]:
-                powerup_rect = pygame.Rect(powerup[0] - 14, powerup[1] - 14, 28, 28)
+                powerup_rect = pygame.Rect(powerup[0] - 15, powerup[1] - 15, 30, 30)
 
                 if player_rect.colliderect(powerup_rect):
                     game["powerups"].remove(powerup)
-                    game["power_timers"][powerup[2]] = powerup_duration
+
+                    power_type = powerup[2]
+
+                    if power_type == "heal1":
+                        game["player_life"] = min(3, game["player_life"] + 1)
+
+                    elif power_type == "heal2":
+                        game["player_life"] = min(3, game["player_life"] + 2)
+
+                    elif power_type == "bonus_heart":
+                        game["bonus_life"] = min(1, game["bonus_life"] + 1)
+
+                    else:
+                        game["power_timers"][power_type] = powerup_duration
 
         for explosion in game["explosions"]:
             explosion[2] += 1
@@ -318,6 +382,7 @@ async def main():
 
         screen.fill((5, 5, 20))
 
+        # Étoiles
         for star in stars:
             star[0] -= star[2]
 
@@ -327,13 +392,27 @@ async def main():
 
             pygame.draw.circle(screen, (220, 220, 220), (star[0], star[1]), star[2])
 
+        # Tirs du joueur
         for bullet in game["bullets"]:
             if bullet[2] == "laser":
-                pygame.draw.rect(screen, (80, 220, 255), (bullet[0], bullet[1] - 6, 26, 12))
-                pygame.draw.rect(screen, (255, 255, 255), (bullet[0], bullet[1] - 2, 26, 4))
+                pygame.draw.rect(
+                    screen,
+                    (80, 220, 255),
+                    (bullet[0], bullet[1] - 6, 26, 12)
+                )
+                pygame.draw.rect(
+                    screen,
+                    (255, 255, 255),
+                    (bullet[0], bullet[1] - 2, 26, 4)
+                )
             else:
-                pygame.draw.rect(screen, (255, 255, 80), (bullet[0], bullet[1] - 3, 12, 6))
+                pygame.draw.rect(
+                    screen,
+                    (255, 255, 80),
+                    (bullet[0], bullet[1] - 3, 12, 6)
+                )
 
+        # Tirs ennemis
         for enemy_bullet in game["enemy_bullets"]:
             pygame.draw.rect(
                 screen,
@@ -341,12 +420,15 @@ async def main():
                 (enemy_bullet[0], enemy_bullet[1] - 3, 12, 6)
             )
 
+        # Drops
         for powerup in game["powerups"]:
             draw_powerup(screen, powerup[0], powerup[1], powerup[2], small_font)
 
+        # Ennemis
         for enemy in game["enemies"]:
             draw_enemy(screen, enemy[0], enemy[1])
 
+        # Explosions
         for explosion in game["explosions"]:
             draw_explosion(
                 screen,
@@ -356,15 +438,20 @@ async def main():
                 explosion_max_age
             )
 
+        # Joueur
         draw_ship(screen, game["ship_x"], game["ship_y"])
 
+        # Interface
         score_text = font.render(f"Score : {game['score']}", True, (255, 255, 255))
         life_text = font.render(f"Vie : {game['player_life']}", True, (255, 255, 255))
+        bonus_text = font.render(f"Bonus : {game['bonus_life']}", True, (255, 220, 40))
 
         screen.blit(score_text, (20, 20))
         screen.blit(life_text, (20, 55))
+        screen.blit(bonus_text, (20, 90))
 
-        y_power = 90
+        y_power = 125
+
         power_names = {
             "triple": "Triple tir",
             "rapid": "Tir rapide",
@@ -374,11 +461,13 @@ async def main():
         for power_type, timer in game["power_timers"].items():
             if timer > 0:
                 seconds_left = timer // FPS + 1
+
                 power_text = small_font.render(
                     f"{power_names[power_type]} : {seconds_left}s",
                     True,
                     (255, 255, 255)
                 )
+
                 screen.blit(power_text, (20, y_power))
                 y_power += 25
 
