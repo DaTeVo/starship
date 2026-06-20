@@ -1,5 +1,6 @@
 import pygame
 
+from audio import play_sound
 from boss import (
     bomb_rect,
     boss_rect,
@@ -32,6 +33,7 @@ def handle_collisions(game):
             if current_bullet_rect.colliderect(enemy_rect):
                 game["enemies"].remove(enemy)
                 game["explosions"].append([enemy[0], enemy[1], 0])
+                play_sound("explosion")
                 game["score"] += 1
                 handle_score_milestones(game)
                 spawn_powerup_drop(game, enemy[0], enemy[1])
@@ -68,6 +70,7 @@ def handle_collisions(game):
                 boss_x = game["boss"]["x"]
                 boss_y = game["boss"]["y"]
                 game["explosions"].append([boss_x, boss_y, 0])
+                play_sound("explosion")
                 game["score"] += BOSS_SCORE_REWARD
                 game["boss"] = None
                 handle_score_milestones(game)
@@ -97,6 +100,7 @@ def handle_collisions(game):
         if player_rect.colliderect(enemy_rect):
             game["enemies"].remove(enemy)
             game["explosions"].append([enemy[0], enemy[1], 0])
+            play_sound("explosion")
             damage_player(game)
 
     if (
@@ -125,4 +129,5 @@ def handle_collisions(game):
 
         if player_rect.colliderect(powerup_rect):
             game["powerups"].remove(powerup)
+            play_sound("powerup")
             apply_powerup(game, powerup[2])

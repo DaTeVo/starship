@@ -2,6 +2,7 @@ import asyncio
 
 import pygame
 
+from audio import init_audio, start_music
 from background import create_theme_state, draw_background
 from boss import draw_boss, draw_boss_bombs, update_boss
 from collisions import handle_collisions
@@ -17,6 +18,8 @@ from ui import draw_game_over, draw_hud
 
 async def main():
     pygame.init()
+    init_audio()
+    start_music()
 
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Space Game Python")

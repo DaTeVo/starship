@@ -3,6 +3,7 @@ import random
 
 import pygame
 
+from audio import play_sound
 from settings import (
     BOSS_ATTACK_DELAY,
     BOSS_BOMB_EXPLOSION_AGE,
@@ -174,6 +175,7 @@ def explode_bomb(game, bomb):
     bomb["exploded"] = True
     bomb["age"] = 0
     game["explosions"].append([bomb["x"], bomb["y"], 0])
+    play_sound("explosion")
 
     if bomb["type"] == "fragment":
         spawn_small_bombs(game, bomb)
