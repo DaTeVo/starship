@@ -2,7 +2,7 @@ import asyncio
 
 import pygame
 
-from background import create_nebula_layers, create_stars, draw_background
+from background import create_theme_state, draw_background
 from boss import draw_boss, draw_boss_bombs, update_boss
 from collisions import handle_collisions
 from effects import draw_explosion, update_explosions
@@ -27,8 +27,7 @@ async def main():
     big_font = pygame.font.SysFont(None, 80)
 
     game = reset_game()
-    nebula_layers = create_nebula_layers()
-    stars = create_stars()
+    background = create_theme_state(0)
 
     running = True
 
@@ -58,7 +57,7 @@ async def main():
 
         update_explosions(game)
 
-        draw_background(screen, nebula_layers, stars)
+        draw_background(screen, background, game["score"])
         draw_projectiles(screen, game)
         draw_boss_bombs(screen, game)
 

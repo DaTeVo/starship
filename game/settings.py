@@ -37,6 +37,8 @@ POWERUP_DURATION = 8 * FPS
 
 EXPLOSION_MAX_AGE = 25
 
+BACKGROUND_SCORE_STEP = 100
+
 POWER_NAMES = {
     "triple": "Triple tir",
     "rapid": "Tir rapide",
