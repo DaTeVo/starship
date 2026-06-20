@@ -1,2 +1,5 @@
 build/
-game/__pycache__
+__pycache__/
+*.py[cod]
+.coverage
+coverage.xml
