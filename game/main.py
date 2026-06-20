@@ -3,6 +3,7 @@ import asyncio
 import pygame
 
 from background import create_nebula_layers, create_stars, draw_background
+from boss import draw_boss, draw_boss_bombs, update_boss
 from collisions import handle_collisions
 from effects import draw_explosion, update_explosions
 from enemies import draw_enemy, update_enemies
@@ -50,6 +51,7 @@ async def main():
         if not game["game_over"]:
             update_player(game, keys)
             update_enemies(game)
+            update_boss(game)
             update_projectiles(game)
             update_powerups(game)
             handle_collisions(game)
@@ -58,12 +60,16 @@ async def main():
 
         draw_background(screen, nebula_layers, stars)
         draw_projectiles(screen, game)
+        draw_boss_bombs(screen, game)
 
         for powerup in game["powerups"]:
             draw_powerup(screen, powerup[0], powerup[1], powerup[2], small_font)
 
         for enemy in game["enemies"]:
             draw_enemy(screen, enemy[0], enemy[1])
+
+        if game["boss"] is not None:
+            draw_boss(screen, game["boss"], small_font)
 
         for explosion in game["explosions"]:
             draw_explosion(
