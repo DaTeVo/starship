@@ -27,10 +27,12 @@ def update_enemies(game):
 
     if game["spawn_timer"] >= ENEMY_SPAWN_DELAY:
         for index in range(game["enemy_spawn_count"]):
-            game["enemies"].append([
-                WIDTH + 40 + index * 45,
-                random.randint(40, HEIGHT - 40),
-            ])
+            game["enemies"].append(
+                [
+                    WIDTH + 40 + index * 45,
+                    random.randint(40, HEIGHT - 40),
+                ]
+            )
 
         game["spawn_timer"] = 0
 
@@ -44,7 +46,4 @@ def update_enemies(game):
     for enemy in game["enemies"]:
         enemy[0] -= ENEMY_SPEED
 
-    game["enemies"] = [
-        enemy for enemy in game["enemies"]
-        if enemy[0] > -50
-    ]
+    game["enemies"] = [enemy for enemy in game["enemies"] if enemy[0] > -50]

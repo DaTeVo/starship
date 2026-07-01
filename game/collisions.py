@@ -47,7 +47,9 @@ def handle_collisions(game):
             continue
 
         for bomb in game["boss_bombs"]:
-            if not bomb["exploded"] and current_bullet_rect.colliderect(bomb_rect(bomb)):
+            if not bomb["exploded"] and current_bullet_rect.colliderect(
+                bomb_rect(bomb)
+            ):
                 explode_bomb(game, bomb)
 
                 if bullet[2] != "laser" and bullet in game["bullets"]:
@@ -57,7 +59,9 @@ def handle_collisions(game):
         if bullet not in game["bullets"]:
             continue
 
-        if game["boss"] is not None and current_bullet_rect.colliderect(boss_rect(game["boss"])):
+        if game["boss"] is not None and current_bullet_rect.colliderect(
+            boss_rect(game["boss"])
+        ):
             if bullet[2] == "laser":
                 game["boss"]["life"] -= BOSS_LASER_DAMAGE
             else:
@@ -75,20 +79,10 @@ def handle_collisions(game):
                 game["boss"] = None
                 handle_score_milestones(game)
 
-    player_rect = pygame.Rect(
-        game["ship_x"] - 25,
-        game["ship_y"] - 15,
-        50,
-        30
-    )
+    player_rect = pygame.Rect(game["ship_x"] - 25, game["ship_y"] - 15, 50, 30)
 
     for enemy_bullet in game["enemy_bullets"][:]:
-        enemy_bullet_rect = pygame.Rect(
-            enemy_bullet[0],
-            enemy_bullet[1] - 3,
-            12,
-            6
-        )
+        enemy_bullet_rect = pygame.Rect(enemy_bullet[0], enemy_bullet[1] - 3, 12, 6)
 
         if enemy_bullet_rect.colliderect(player_rect):
             game["enemy_bullets"].remove(enemy_bullet)

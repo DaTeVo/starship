@@ -41,10 +41,7 @@ def update_powerups(game):
     for powerup in game["powerups"]:
         powerup[0] -= POWERUP_SPEED
 
-    game["powerups"] = [
-        powerup for powerup in game["powerups"]
-        if powerup[0] > -30
-    ]
+    game["powerups"] = [powerup for powerup in game["powerups"] if powerup[0] > -30]
 
 
 def spawn_powerup_drop(game, x, y):

@@ -44,8 +44,7 @@ def queue_boss(game):
     game["boss_level"] += 1
     game["next_boss_score"] += BOSS_SCORE_STEP
     game["enemy_spawn_count"] = min(
-        game["max_enemy_spawn_count"],
-        game["enemy_spawn_count"] + 1
+        game["max_enemy_spawn_count"], game["enemy_spawn_count"] + 1
     )
 
 
@@ -105,27 +104,31 @@ def create_bomb(x, y, vx, vy, fuse, bomb_type, radius):
 
 
 def spawn_bomb(game, boss):
-    game["boss_bombs"].append(create_bomb(
-        boss["x"] - 50,
-        boss["y"],
-        -BOSS_BOMB_SPEED,
-        0,
-        BOSS_BOMB_FUSE,
-        "normal",
-        BOSS_BOMB_RADIUS,
-    ))
+    game["boss_bombs"].append(
+        create_bomb(
+            boss["x"] - 50,
+            boss["y"],
+            -BOSS_BOMB_SPEED,
+            0,
+            BOSS_BOMB_FUSE,
+            "normal",
+            BOSS_BOMB_RADIUS,
+        )
+    )
 
 
 def spawn_fragment_bomb(game, boss):
-    game["boss_bombs"].append(create_bomb(
-        boss["x"] - 50,
-        boss["y"],
-        -BOSS_BOMB_SPEED,
-        0,
-        BOSS_FRAGMENT_BOMB_FUSE,
-        "fragment",
-        BOSS_BOMB_RADIUS,
-    ))
+    game["boss_bombs"].append(
+        create_bomb(
+            boss["x"] - 50,
+            boss["y"],
+            -BOSS_BOMB_SPEED,
+            0,
+            BOSS_FRAGMENT_BOMB_FUSE,
+            "fragment",
+            BOSS_BOMB_RADIUS,
+        )
+    )
 
 
 def spawn_small_bombs(game, bomb):
@@ -133,15 +136,17 @@ def spawn_small_bombs(game, bomb):
     directions = [(-speed, -speed), (-speed, speed), (speed, -speed), (speed, speed)]
 
     for vx, vy in directions:
-        game["boss_bombs"].append(create_bomb(
-            bomb["x"],
-            bomb["y"],
-            vx,
-            vy,
-            BOSS_FRAGMENT_BOMB_FUSE,
-            "small",
-            BOSS_SMALL_BOMB_RADIUS,
-        ))
+        game["boss_bombs"].append(
+            create_bomb(
+                bomb["x"],
+                bomb["y"],
+                vx,
+                vy,
+                BOSS_FRAGMENT_BOMB_FUSE,
+                "small",
+                BOSS_SMALL_BOMB_RADIUS,
+            )
+        )
 
 
 def update_bombs(game):
@@ -162,7 +167,8 @@ def update_bombs(game):
             explode_bomb(game, bomb)
 
     game["boss_bombs"] = [
-        bomb for bomb in game["boss_bombs"]
+        bomb
+        for bomb in game["boss_bombs"]
         if -BOSS_BOMB_RADIUS < bomb["x"] < WIDTH + BOSS_BOMB_RADIUS
         and bomb["age"] <= BOSS_BOMB_EXPLOSION_AGE
     ]
@@ -214,7 +220,9 @@ def draw_boss(screen, boss, small_font):
     bar_width = 100
     life_ratio = boss["life"] / boss["max_life"]
     pygame.draw.rect(screen, (50, 20, 70), (x - 50, y - 62, bar_width, 8))
-    pygame.draw.rect(screen, (255, 80, 120), (x - 50, y - 62, int(bar_width * life_ratio), 8))
+    pygame.draw.rect(
+        screen, (255, 80, 120), (x - 50, y - 62, int(bar_width * life_ratio), 8)
+    )
     pygame.draw.rect(screen, (255, 220, 255), (x - 50, y - 62, bar_width, 8), 1)
 
     life_text = small_font.render(str(boss["life"]), True, (255, 255, 255))
