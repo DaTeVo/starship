@@ -40,9 +40,7 @@ def draw_hud(screen, game, font, small_font):
         if timer > 0:
             seconds_left = timer // FPS + 1
             power_text = small_font.render(
-                f"{POWER_NAMES[power_type]} : {seconds_left}s",
-                True,
-                (255, 255, 255)
+                f"{POWER_NAMES[power_type]} : {seconds_left}s", True, (255, 255, 255)
             )
 
             screen.blit(power_text, (20, y_power))

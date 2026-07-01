@@ -67,9 +67,13 @@ def update_player(game, keys):
 
     if keys[pygame.K_SPACE] and game["shoot_cooldown"] == 0:
         if triple_is_active:
-            game["bullets"].append([game["ship_x"] + 30, game["ship_y"] - 12, bullet_type])
+            game["bullets"].append(
+                [game["ship_x"] + 30, game["ship_y"] - 12, bullet_type]
+            )
             game["bullets"].append([game["ship_x"] + 30, game["ship_y"], bullet_type])
-            game["bullets"].append([game["ship_x"] + 30, game["ship_y"] + 12, bullet_type])
+            game["bullets"].append(
+                [game["ship_x"] + 30, game["ship_y"] + 12, bullet_type]
+            )
         else:
             game["bullets"].append([game["ship_x"] + 30, game["ship_y"], bullet_type])
 

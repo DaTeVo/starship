@@ -75,11 +75,7 @@ async def main():
 
         for explosion in game["explosions"]:
             draw_explosion(
-                screen,
-                explosion[0],
-                explosion[1],
-                explosion[2],
-                EXPLOSION_MAX_AGE
+                screen, explosion[0], explosion[1], explosion[2], EXPLOSION_MAX_AGE
             )
 
         draw_ship(screen, game["ship_x"], game["ship_y"])

@@ -24,8 +24,7 @@ def init_audio():
             pygame.mixer.init()
 
         sounds = {
-            name: pygame.mixer.Sound(str(path))
-            for name, path in SOUND_PATHS.items()
+            name: pygame.mixer.Sound(str(path)) for name, path in SOUND_PATHS.items()
         }
 
         for sound in sounds.values():

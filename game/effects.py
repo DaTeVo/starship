@@ -21,13 +21,7 @@ def draw_explosion(screen, x, y, age, max_age):
         end_x = x + int(math.cos(rad) * radius)
         end_y = y + int(math.sin(rad) * radius)
 
-        pygame.draw.line(
-            screen,
-            (255, 220, 80),
-            (start_x, start_y),
-            (end_x, end_y),
-            2
-        )
+        pygame.draw.line(screen, (255, 220, 80), (start_x, start_y), (end_x, end_y), 2)
 
 
 def update_explosions(game):
@@ -35,6 +29,7 @@ def update_explosions(game):
         explosion[2] += 1
 
     game["explosions"] = [
-        explosion for explosion in game["explosions"]
+        explosion
+        for explosion in game["explosions"]
         if explosion[2] <= EXPLOSION_MAX_AGE
     ]

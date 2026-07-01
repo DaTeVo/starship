@@ -96,14 +96,16 @@ def create_planets(theme, seed):
 
     for _ in range(planet_count):
         radius = random_generator.randint(22, 70)
-        planets.append({
-            "x": random_generator.randint(0, WIDTH),
-            "y": random_generator.randint(70, HEIGHT - 70),
-            "radius": radius,
-            "speed": random_generator.uniform(0.12, 0.45),
-            "color": random_generator.choice(theme_planet_colors(theme)),
-            "ring": random_generator.random() < 0.35,
-        })
+        planets.append(
+            {
+                "x": random_generator.randint(0, WIDTH),
+                "y": random_generator.randint(70, HEIGHT - 70),
+                "radius": radius,
+                "speed": random_generator.uniform(0.12, 0.45),
+                "color": random_generator.choice(theme_planet_colors(theme)),
+                "ring": random_generator.random() < 0.35,
+            }
+        )
 
     return planets
 
@@ -166,12 +168,16 @@ def create_theme_nebula_layers(theme, theme_index):
 
     return [
         {
-            "surface": create_nebula_layer(WIDTH, HEIGHT, first, 14, theme_index * 100 + 12),
+            "surface": create_nebula_layer(
+                WIDTH, HEIGHT, first, 14, theme_index * 100 + 12
+            ),
             "offset": 0,
             "speed": 0.16,
         },
         {
-            "surface": create_nebula_layer(WIDTH, HEIGHT, second, 9, theme_index * 100 + 42),
+            "surface": create_nebula_layer(
+                WIDTH, HEIGHT, second, 9, theme_index * 100 + 42
+            ),
             "offset": WIDTH // 3,
             "speed": 0.31,
         },
@@ -292,10 +298,17 @@ def draw_planets(screen, planets):
 
         pygame.draw.circle(screen, shadow, (x + 7, y + 5), radius)
         pygame.draw.circle(screen, color, (x, y), radius)
-        pygame.draw.circle(screen, (255, 255, 255), (x - radius // 3, y - radius // 3), max(3, radius // 8))
+        pygame.draw.circle(
+            screen,
+            (255, 255, 255),
+            (x - radius // 3, y - radius // 3),
+            max(3, radius // 8),
+        )
 
         if planet["ring"]:
-            ring_rect = pygame.Rect(x - radius - 18, y - radius // 3, radius * 2 + 36, int(radius / 1.5))
+            ring_rect = pygame.Rect(
+                x - radius - 18, y - radius // 3, radius * 2 + 36, int(radius / 1.5)
+            )
             pygame.draw.ellipse(screen, (210, 210, 220), ring_rect, 2)
 
 
